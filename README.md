@@ -52,7 +52,27 @@ curl -I http://go-web-app.local/courses
 
 Expect `302` with `Location: /home` for `/`, and `200` for `/courses`.
 
+## CI/CD configuration
+
+The [GitHub Actions workflow](.github/workflows/cicd.yaml) uses the Go version
+declared in [go.mod](go.mod) for both build/tests and code quality, with
+golangci-lint pinned to v1.64.8. Dependency caching is disabled because this
+project has no external Go dependencies or go.sum file.
+
+Before running the workflow, add these repository secrets under **Settings >
+Secrets and variables > Actions > New repository secret**:
+
+- `DOCKERHUB_USERNAME`: your Docker Hub username, not your email address.
+- `DOCKERHUB_TOKEN`: a Docker Hub personal access token with Read & Write
+  permission for the image repository.
+- `TOKEN`: a GitHub token with write access to this repository's contents, used
+  by the final job to commit the updated Helm image tag.
+
+The Docker login error `Username and password required` means one or both
+Docker Hub secrets are empty or unavailable to the job. Use the exact names
+above and store them as secrets, not Actions variables. Never commit token
+values to the workflow. Docker Hub tokens and GitHub tokens are not interchangeable.
+
 ## Looks like this
 
 ![Website](static/images/golang-website.png)
-
