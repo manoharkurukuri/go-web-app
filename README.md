@@ -73,6 +73,26 @@ Docker Hub secrets are empty or unavailable to the job. Use the exact names
 above and store them as secrets, not Actions variables. Never commit token
 values to the workflow. Docker Hub tokens and GitHub tokens are not interchangeable.
 
+## Deploying with Argo CD
+
+Configure the application's Git source with revision `main`, path
+`helm/go-web-app-chart`, and source type **Helm**. Helm loads the chart's
+`values.yaml` automatically. Leave `image.tag` overrides unset so the image tag
+committed by CI takes effect.
+
+The chart's `charts/` directory is reserved for Helm dependency charts, not
+GitHub Actions workflows. Keep workflows in `.github/workflows/`; a workflow
+inside `charts/` causes a `Chart.yaml file is missing` rendering error.
+
+Validate the chart before pushing:
+
+```bash
+helm lint helm/go-web-app-chart
+helm template go-web-app helm/go-web-app-chart --namespace default
+```
+
+Push chart changes to Git before creating or refreshing the Argo CD application.
+
 ## Looks like this
 
 ![Website](static/images/golang-website.png)
