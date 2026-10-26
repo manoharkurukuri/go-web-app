@@ -73,6 +73,14 @@ Docker Hub secrets are empty or unavailable to the job. Use the exact names
 above and store them as secrets, not Actions variables. Never commit token
 values to the workflow. Docker Hub tokens and GitHub tokens are not interchangeable.
 
+CI publishes images for both `linux/amd64` and `linux/arm64`, using QEMU and
+Docker Buildx. This supports both x86 servers and ARM64 Multipass nodes on
+Apple Silicon. An image pull error containing `no match for platform in
+manifest` means the published image does not include the node's architecture.
+After changing the build platforms, push the workflow change and let CI publish
+a new image and update the Helm tag, then sync the application in Argo CD.
+Existing image tags are not rebuilt automatically.
+
 ## Deploying with Argo CD
 
 Configure the application's Git source with revision `main`, path
